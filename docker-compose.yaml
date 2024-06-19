@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - node-modules-store:/app/node_modules
+    ports:
+      - 8888:8888
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/api
+      - bundle-store:/usr/local/bundle
+    ports:
+      - 3000:3000
+
+  db:
+    container_name: mysql
+    image: mysql/mysql-server:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-db:/var/lib/mysql
+    ports:
+      - ${DB_PORT}:3306
+
+volumes:
+  mysql-db:
+  bundle-store:
+  node-modules-store:
