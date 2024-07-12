@@ -2,29 +2,35 @@ version: "3.8"
 services:
   frontend:
     container_name: frontend
+    env_file:
+      - ./.env
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
     environment:
-      - PORT=8888
+      - PORT=${FE_PORT}
       - API_HOST=backend
-      - API_PORT=3000
+      - API_PORT=${BE_PORT}
     volumes:
-      - ./frontend:/app
+      - ./frontend/:/app
       - node-modules-store:/app/node_modules
     ports:
-      - 8888:8888
+      - ${FE_PORT}:8888
+    depends_on:
+      - backend
 
   backend:
     container_name: backend
+    env_file:
+      - ./.env
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
     volumes:
-      - ./backend:/api
+      - ./backend/:/app
       - bundle-store:/usr/local/bundle
     ports:
-      - 3000:3000
+      - ${BE_PORT}:3000
     depends_on:
       - db
 
